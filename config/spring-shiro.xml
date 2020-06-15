@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+	<!--1. 配置securityManager安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="shiroRealm" />
+	</bean>
+	<!--2.配置realm 自定义的Realm -->
+	<bean id="shiroRealm" class="org.yxyy.realms.MyRealm"></bean>
+
+	<!--3.Shiro Filter id值和web.xml文件配置的过滤器名称相同 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<!-- 登录页面 -->
+		<property name="loginUrl" value="/login.jsp" />
+		<!-- 登录成功页面,如果不配置，默认跳转到上上一个界面 -->
+		<!--<property name="successUrl" value="/welcome.jsp"/> -->
+		<!-- 没有权限的页面 -->
+		<!-- <property name="unauthorizedUrl" value="/login.jsp"/> -->
+		<!-- 配置哪些页面需要受保护. 以及访问这些页面需要的权限. 
+			1. anon 可以被匿名访问 
+			2. authc 必须认证(即登录)后才可能访问的页面. 
+			3. logout 登出 
+			4. roles 角色过滤器
+		 -->
+		<property name="filterChainDefinitions">
+			<value>
+				<!-- 登录可匿名访问 -->
+				/login.do = anon
+				/images/** = anon
+				<!-- 其他的需要授权访问authc -->
+				/index.jsp =authc
+				/** = authc
+			</value>
+		</property>
+	</bean>
+	
+</beans>
